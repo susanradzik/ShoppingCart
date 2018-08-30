@@ -8,13 +8,24 @@ public class ShoppingCart {
 	private static int priceOrange = 25;
 	static final String britishPound = "\u00A3"; // another quick google to get the pound symbol
 	
-	
+	/**< calculate discounted apples/oranges where 
+	 * apples are buy one get one and oranges are 3 oranges for the price of 2
+	 * BUT we round up so 3 apples are the price of 2 apples (only 1 free)
+	 * AND 5 oranges are the price of 4 (first 3 are the price of 2 and the other 2 are full price */
+	private static void calculateAndDisplayCostWithDiscounts(int iApplesTotal, int iOrangesTotal) {
+		int iApples = (iApplesTotal / 2) + (iApplesTotal % 2);
+		int iOranges = 2*(iOrangesTotal / 3) + (iOrangesTotal % 3);
+		int iTotal = (iApples * priceApple) + iOranges * priceOrange;
+		System.out.printf("The total for your order with discounts is: %s%d.%02d",britishPound,iTotal / 100, iTotal % 100);		
+	}
+
+	/**< this routine calculates the checkout total of oranges and apples without a discount */
 	private static void calculateAndDisplayCost(int iApples, int iOranges) {
 		int iTotal = (iApples * priceApple) + iOranges * priceOrange;
 		System.out.printf("The total for your order is: %s%d.%02d",britishPound,iTotal / 100, iTotal % 100);		
 	}
 	
-	private static void countItemsCalculateCosts(String[] allItems) {
+	private static void countItemsCalculateCosts(String[] allItems,boolean useDiscounts) {
 		int iApples = 0;
 		int iOranges = 0;
 		int iSize = allItems.length;
@@ -29,8 +40,12 @@ public class ShoppingCart {
 				}
 			}
 		}
-		
-		calculateAndDisplayCost(iApples, iOranges);
+		if (useDiscounts) {
+			calculateAndDisplayCostWithDiscounts(iApples, iOranges);
+		}
+		else {
+			calculateAndDisplayCost(iApples, iOranges);
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -40,8 +55,9 @@ public class ShoppingCart {
 
 		String stItems = "There was an error";
 		boolean isError = false;
+		boolean useDiscounts = true;
 		
-		//Enter data using BufferReader so program can be run from eclipse IDE
+		//Enter data using BufferReader so program can be run and tested from Eclipse IDE
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
        	try {
 			stItems = reader.readLine();
@@ -52,7 +68,7 @@ public class ShoppingCart {
        	
        	if (!isError) {
        		System.out.println("Your cart contains: " + stItems);
-       		countItemsCalculateCosts(stItems.split(" "));
+       		countItemsCalculateCosts(stItems.split(" "),useDiscounts);       		
        	}
 	}
 
