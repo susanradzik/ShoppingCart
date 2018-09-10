@@ -6,6 +6,7 @@ public class ShoppingCart {
 
 	private static int priceApple = 60;	// quick google indicates 100 pence in a pound
 	private static int priceOrange = 25;
+	private static int priceBanana = 20;
 	static final String britishPound = "\u00A3"; // another quick google to get the pound symbol
 	
 	/**< calculate discounted apples/oranges where 
@@ -28,6 +29,7 @@ public class ShoppingCart {
 	private static void countItemsCalculateCosts(String[] allItems,boolean useDiscounts) {
 		int iApples = 0;
 		int iOranges = 0;
+		int iBananas = 0;
 		int iSize = allItems.length;
 		
 		if (iSize > 0) {
@@ -37,6 +39,9 @@ public class ShoppingCart {
 				}
 				else if ("Orange".compareToIgnoreCase(allItems[i]) == 0){
 					++iOranges;
+				}
+				else if ("Banana".compareToIgnoreCase(allItems[i]) == 0) {
+					++iBananas;
 				}
 			}
 		}
@@ -68,8 +73,47 @@ public class ShoppingCart {
        	
        	if (!isError) {
        		System.out.println("Your cart contains: " + stItems);
-       		countItemsCalculateCosts(stItems.split(" "),useDiscounts);       		
+       		//countItemsCalculateCosts(stItems.split(" "),useDiscounts);       		
+       		countItemsCalculateCosts2(stItems.split(" "),useDiscounts);
        	}
 	}
 
+	private static void countItemsCalculateCosts2(String[] split, boolean useDiscounts) {
+		int iApples = 0;
+		int iOranges = 0;
+		int iBananas = 0;;
+		int iSize = split.length;
+		String priorFruit = "";
+		
+		if (iSize > 0) {
+			for (int i = 0; i < iSize; i++) {
+				if ("Orange".compareToIgnoreCase(split[i]) == 0){
+					++iOranges;
+					continue;
+					
+				}				
+				if (priorFruit.isEmpty()) {
+					priorFruit = split[i];
+					if (i != iSize - 1)
+						continue;	// where the last item in the list, let it do the compare below
+				}
+				boolean isPriorFruitBanana = priorFruit.equalsIgnoreCase("Banana");
+				boolean isCurrentFruitBanana = split[i].equalsIgnoreCase("Banana");
+				if (isPriorFruitBanana || isCurrentFruitBanana) 
+					++iBananas;
+				else
+					++iApples;
+				priorFruit = "";
+			}
+		}
+		calculateAndDisplayCostsDiscountOranges(iBananas,iApples,iOranges);
+
+	}
+
+	private static void calculateAndDisplayCostsDiscountOranges(int iBananas, int iApples, int iOrangesTotal) {
+		int iOranges = 2*(iOrangesTotal / 3) + (iOrangesTotal % 3);
+		int iTotal = (iBananas * priceBanana) + (iApples * priceApple) + iOranges * priceOrange;
+		System.out.printf("The total for your order with discounts is: %s%d.%02d",britishPound,iTotal / 100, iTotal % 100);		
+		
+	}
 }
